@@ -4,6 +4,8 @@ import Registration from "./RegistrationComponent";
 import Portfolio from "./PortfolioComponent";
 import TestsCreator from "./TestsComponent";
 import ScheduleCreator from "./ScheduleComponent";
+import ProfessorGrading from "./ProfessorGrading";
+
 
 class Main extends Component {
 
@@ -34,6 +36,7 @@ class Main extends Component {
                     <Route exact path='/portfolio' component={() => <Portfolio />} />
                     <Route exact path='/tests/add' component={() => <TestsCreator />} />
                     <Route exact path='/schedule/add' component={() => <ScheduleCreator />} />
+                    <Route exact path= '/interview' component={() => <ProfessorGrading/>} />
                     <Redirect to="/home" />
                 </Switch>
             </div>
