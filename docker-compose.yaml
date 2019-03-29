@@ -1,0 +1,26 @@
+version: '3.0'
+
+services:
+  reverse-proxy:
+    image: nginx
+
+    volumes:
+      - "./nginx.conf:/etc/nginx/nginx.conf:ro"
+
+    ports:
+      - "80:80"
+
+    links:
+      - front
+      # - back
+
+    restart: always
+
+  front:
+    image: local/front
+    build: front
+    restart: always
+
+  # back:
+  #   image: local/back
+  #   build: back
