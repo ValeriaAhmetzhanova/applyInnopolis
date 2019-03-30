@@ -14,3 +14,9 @@ Manage it with:
 ```
 # docker-compose run back python manage.py [command...]
 ```
+
+or with a shortcut:
+
+```
+# ./docker-manage.sh [command...]
+```
