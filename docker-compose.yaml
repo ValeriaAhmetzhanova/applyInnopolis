@@ -10,9 +10,9 @@ services:
     ports:
       - "80:80"
 
-    links:
+    depends_on:
       - front
-      # - back
+      - back
 
     restart: always
 
@@ -21,6 +21,24 @@ services:
     build: front
     restart: always
 
-  # back:
-  #   image: local/back
-  #   build: back
+  db:
+    image: postgres
+    restart: always
+
+    volumes:
+      - "db:/var/lib/postgresql/data"
+
+  back:
+    image: local/back
+    build: back
+    command: python manage.py runserver 0.0.0.0:80
+
+    volumes:
+      - ./back:/code
+
+    depends_on:
+      - db
+
+volumes:
+  db:
+    external: false
