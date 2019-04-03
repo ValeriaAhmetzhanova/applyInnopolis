@@ -2,8 +2,9 @@ import React, { Component } from 'react';
 import { Switch, Route, Redirect } from 'react-router-dom';
 import Registration from "./RegistrationComponent";
 import Portfolio from "./PortfolioComponent";
-import TestsCreator from "./TestsComponent";
-import ScheduleCreator from "./ScheduleComponent";
+import Header from "./HeaderComponent";
+import Data from "./DataComponent";
+import Quiz from "./QuizComponent";
 
 class Main extends Component {
 
@@ -28,12 +29,13 @@ class Main extends Component {
 
         return (
             <div>
+                <Header/>
                 <Switch>
                     <Route path='/home' component={HomePage} />
                     <Route exact path='/signup' component={() => <Registration />} />
                     <Route exact path='/portfolio' component={() => <Portfolio />} />
-                    <Route exact path='/tests/add' component={() => <TestsCreator />} />
-                    <Route exact path='/schedule/add' component={() => <ScheduleCreator />} />
+                    <Route exact path='/data' component={() => <Data />} />
+                    <Route exact path='/quiz' component={() => <Quiz />} />
                     <Redirect to="/home" />
                 </Switch>
             </div>

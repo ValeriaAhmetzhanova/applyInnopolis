@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import Dropzone from './DropzoneComponent';
-import Progress from './ProgressComponent';;
+import Progress from './ProgressComponent';
 
 class Portfolio extends Component {
     constructor(props) {
