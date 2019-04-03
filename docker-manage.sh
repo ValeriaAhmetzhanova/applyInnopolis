@@ -1,2 +1,2 @@
 #!/bin/bash
-docker-compose run back python manage.py "$@"
+docker-compose run --rm back python manage.py "$@"
