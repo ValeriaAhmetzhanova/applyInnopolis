@@ -6,6 +6,9 @@ from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth import login, authenticate
+from rest_framework import status
 
 from .serializers import UserSerializer, GroupSerializer
 
@@ -36,3 +39,16 @@ class ExampleView(APIView):
             'auth': str(request.auth),  # None
         }
         return Response(content)
+
+
+@api_view(['POST'])
+def signup(request):
+    form = UserCreationForm(request.POST)
+    if form.is_valid():
+        form.save() # Why?
+        username = form.cleaned_data.get('username')
+        raw_password = form.cleaned_data.get('password1')
+        user = authenticate(username=username, password=raw_password)
+        login(request, user)
+        return Response()
+    return Response(status=status.HTTP_400_BAD_REQUEST)
