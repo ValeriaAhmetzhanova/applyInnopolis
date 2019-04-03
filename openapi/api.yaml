@@ -1,1 +1,397 @@
-# OpenAPI documentation placeholder
+openapi: 3.0.0
+
+servers:
+  - description: SwaggerHub API Auto Mocking
+    url: https://virtserver.swaggerhub.com/ratijas/applyInnopolis/1.0.0
+
+info:
+  description: ""
+  version: "1.0.0"
+  title: Apply to Innopolis
+  termsOfService: 'http://swagger.io/terms/'
+  contact:
+    email: apiteam@swagger.io
+  license:
+    name: Apache 2.0
+    url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
+
+tags:
+  - name: user
+    description: Account related operations
+
+paths:
+  '/user/signup/create':
+    summary: Sign up to the system
+    description: |
+      Enter first/last name and email, then check the mailbox and proceed to
+      email verification (step 2).
+
+      Link in mail will be valid for the next 24 hours.
+
+    post:
+      tags: [ user ]
+      requestBody:
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/UserBase'
+      responses:
+        '200':
+          description: Verification email has been sent.
+        '418':
+          description: Email already registered.
+
+  '/user/signup/verify/{hash}':
+    summary: Verify email
+    description: |
+      Verify email by opening unique link from the envelope,
+      then proceed to profile creation.
+
+    parameters:
+    - name: hash
+      in: path
+      required: true
+      schema:
+        type: string
+        format: base64
+
+    post:
+      tags: [ user ]
+      responses:
+        '200':
+          description: Email has been verified.
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/UserBase'
+
+        '418':
+          description: Invalid or expired hash.
+
+  '/user/signup/finish':
+    summary: Complete registeration
+    description: |
+      Set date of birth, profile photo, choose educational program etc.
+      and thus finish the registration.
+
+    post:
+      tags: [ user ]
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        '200':
+          description: Registration complete
+          content:
+            'application/json': {}
+        '418':
+          description: Some field data is invalid
+
+  '/user/login':
+    post:
+      tags: [ user ]
+      summary: Logs user into the system
+
+      requestBody:
+        content:
+          'application/json':
+            schema:
+              type: object
+              properties:
+                email:
+                  description: The email used as a login name
+                  type: string
+                  format: email
+                password:
+                  description: The password for login in clear text
+                  type: string
+              required:
+              - email
+              - password
+
+      responses:
+        '200':
+          description: Successfully logged in
+          content:
+            'application/json':
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                    description: Authorization token
+        '418':
+          description: Invalid username/password supplied
+
+  '/user/logout':
+    post:
+      tags: [ user ]
+      security: [ api_key: [] ]
+      summary: Logs out current logged in user session
+      responses:
+        default:
+          description: Successfully logged out
+
+  '/user/{user_id}':
+    parameters:
+      - name: user_id
+        in: path
+        description: Integer ID of user.
+        required: true
+        schema:
+          $ref: '#/components/schemas/UserID'
+
+    get:
+      tags: [ user ]
+      security: [ api_key: [] ]
+      summary: Get user by id
+      description: This method is intended for managers and university staff.
+
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '403':
+          description: |
+            Method not allowed for candidates except when requested user ID is
+            the requesting user's ID.
+        '404':
+          description: User not found
+
+    put:
+      tags: [ user ]
+      security: [ api_key: [] ]
+      summary: Update user's personal data
+      description: |
+        Any field can be updated except for ID and email.
+
+        Fields which are not present in form shall retain their data in the database.
+
+      requestBody:
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/User'
+        description: |
+          Only updated fields of User object. No ID, no email needed.
+
+      responses:
+        '200':
+          description: Successfully updated user's data.
+        '403':
+          $ref: '#/components/responses/SameIDOnly'
+        '404':
+          description: User not found
+
+    delete:
+      tags: [ user ]
+      security: [ api_key: [] ]
+      summary: Delete user
+      description: This can only be done by the logged in user itself or a manager.
+
+      responses:
+        '200':
+          description: Successfully deleted user.
+        '403':
+          $ref: '#/components/responses/SameIDOnly'
+        '404':
+          description: User not found
+
+  '/portfolio/file/add':
+    post:
+      tags:
+        - portfolio
+      summary: Add a new file in portfolio
+      operationId: addPortfolioFile
+      responses:
+        '405':
+          description: Invalid input
+      requestBody:
+        $ref: '#/components/requestBodies/PortfolioFile'
+
+  '/test/add':
+    post:
+      tags:
+        - test
+      summary: Add a new test
+      operationId: addTest
+      responses:
+        '405':
+          description: Invalid input
+      requestBody:
+        $ref: '#/components/requestBodies/Test'
+
+  '/schedule/add':
+    post:
+      tags:
+        - schedule
+      summary: Add a new schedule
+      operationId: addSchedule
+      responses:
+        '405':
+          description: Invalid input
+      requestBody:
+        $ref: '#/components/requestBodies/Schedule'
+
+externalDocs:
+  description: Find out more about Swagger
+  url: 'https://app.swaggerhub.com/apis/ratijas/applyInnopolis/1.0.0#/'
+
+components:
+
+  schemas:
+
+    Candidate:
+      allOf:
+      - $ref: '#/components/schemas/User'
+      - type: object
+        properties:
+          candidateStatus:
+            $ref: '#/components/schemas/CandidateStatus'
+
+    UniversityStaff:
+      type: object
+      allOf:
+        - $ref: '#/components/schemas/User'
+
+    Schedule:
+      type: object
+      properties:
+        interviews:
+          type: array
+          items:
+            $ref: '#/components/schemas/Interview'
+
+    Interview:
+      type: object
+      properties:
+        candidate:
+          $ref: '#/components/schemas/Candidate'
+        universityStaff:
+          $ref: '#/components/schemas/UniversityStaff'
+        timeSlot:
+          type: string
+          format: 'date-time'
+
+    Test:
+      type: object
+      properties:
+        questions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Question'
+
+    Question:
+      type: object
+      properties:
+        question:
+          type: string
+        answer:
+          type: array
+          items:
+            $ref: '#/components/schemas/Answer'
+
+    Answer:
+      type: object
+      properties:
+        answer:
+          type: string
+        correct:
+          type: boolean
+
+    CandidateStatus:
+      type: string
+      description: |
+        Current state of the candidate within the application process.
+        Describes pending action.
+
+          * 'test': Either just registered or succesfully passed tests were modified (so that results have been reset);
+          * 'fail:test': Test attempt failed;
+          * 'interview': Has an interview appointment;
+          * 'fail:interview': Interviewer was not happy with the candidate;
+          * 'pass': Yay! A green card.
+      enum:
+        - 'test'
+        - 'fail:test'
+        - 'interview'
+        - 'fail:interview'
+        - 'pass'
+
+    UserBase:
+      type: object
+      properties:
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+          format: email
+      required:
+        - firstName
+        - lastName
+        - email
+
+    UserID:
+      type: integer
+      format: int64
+
+    User:
+      allOf:
+      - $ref: '#/components/schemas/UserBase'
+      - type: object
+        properties:
+          id:
+            $ref: '#/components/schemas/UserID'
+          birthday:
+            type: string
+            format: 'date-time'
+          phone:
+            type: string
+          # TODO: more fields?
+
+  requestBodies:
+
+    PortfolioFile:
+      content:
+        application/json:
+          schema:
+            type: string
+            format: base64
+      description: Test object that needs to be added to the system
+      required: true
+
+    Test:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Test'
+      description: Test object that needs to be added to the system
+      required: true
+
+    Schedule:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Schedule'
+      description: |
+        Schedule of the interview that needs to be added to the system
+      required: true
+
+  responses:
+
+    SameIDOnly:
+      description: |
+        Method not allowed for candidates except when requested user ID is
+        the requesting user's ID.
+
+  securitySchemes:
+    api_key:
+      type: apiKey
+      name: Authorization
+      in: header
