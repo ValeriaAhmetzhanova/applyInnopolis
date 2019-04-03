@@ -1,0 +1,45 @@
+version: '3.0'
+
+services:
+  reverse-proxy:
+    image: nginx
+
+    volumes:
+      - "./nginx.conf:/etc/nginx/nginx.conf:ro"
+
+    ports:
+      - "80:80"
+
+    depends_on:
+      - front
+      - back
+
+    restart: always
+
+  front:
+    image: local/front
+    build: front
+    restart: always
+
+  db:
+    image: postgres
+    restart: always
+
+    volumes:
+      - "db:/var/lib/postgresql/data"
+
+  back:
+    image: local/back
+    build: back
+    command: python manage.py runserver 0.0.0.0:80
+    restart: always
+
+    volumes:
+      - ./back:/code
+
+    depends_on:
+      - db
+
+volumes:
+  db:
+    external: false
