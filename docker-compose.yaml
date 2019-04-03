@@ -32,6 +32,7 @@ services:
     image: local/back
     build: back
     command: python manage.py runserver 0.0.0.0:80
+    restart: always
 
     volumes:
       - ./back:/code
