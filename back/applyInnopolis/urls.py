@@ -16,15 +16,14 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from rest_framework import routers
-from rest_framework_jwt.views import obtain_jwt_token
-
 from .rest import views
-
+from rest_framework.authtoken import views as auth_views
 
 urlpatterns = [
     path(r'api/', include([
-        path('user/login', obtain_jwt_token),
-        path('user/logout', views.user_logout),
+        path('me', views.ExampleView.as_view()),
+
+        path('user/login/', auth_views.obtain_auth_token),
 
         # TODO: delete tutorial
         path('admin/', admin.site.urls),
