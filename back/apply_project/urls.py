@@ -24,11 +24,14 @@ urlpatterns = [
     path(r'api/', include([
         path('me', views.ExampleView.as_view()),
 
-        path('user', views.CreateUser.as_view()),
+        path('user/signup/create', views.SignupCreate.as_view()),
+        path('user/signup/verify/<str:hash>', views.SignupVerify.as_view()),
+        path('user/signup/finish', views.SignupFinish.as_view()),
+
         path('user/login', auth_views.obtain_auth_token),
         path('user/logout', views.LogoutView.as_view()),
 
-        path('user/signup/', views.signup),
+        path('user/<int:user_id>', views.UserView.as_view()),
 
         # TODO: delete tutorial
         path('admin/', admin.site.urls),
