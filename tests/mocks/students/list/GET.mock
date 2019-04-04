@@ -1,0 +1,21 @@
+HTTP/1.1 200 OK
+Content-Type: application/json; charset=utf-8
+Access-Control-Allow-Origin: *
+
+{
+   "success": true,
+   "students": [
+        {
+            "name": "Isaac Poole",
+            "id": 0
+        },
+        {
+            "name": "Michael Robertson",
+            "id": 1
+        },
+        {
+            "name": "William Taylor",
+            "id": 2
+        }
+   ]
+}

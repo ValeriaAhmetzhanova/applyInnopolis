@@ -1,0 +1,29 @@
+HTTP/1.1 200 OK
+Content-Type: application/json; charset=utf-8
+Access-Control-Allow-Origin: *
+
+{
+   "success": true,
+   "professors": [
+        {
+            "name": "Abigail Alsop",
+            "id": 0,
+            "timeslots": [
+                "05.04.2019 12:00",
+                "05.04.2019 16:00",
+                "06.04.2019 10:00",
+                "06.04.2019 12:00"
+            ]
+        },
+        {
+            "name": "Edward Powell",
+            "id": 1,
+            "timeslots": [
+                "05.04.2019 10:00",
+                "05.04.2019 12:00",
+                "05.04.2019 14:00",
+                "05.04.2019 16:00"
+            ]
+         }
+   ]
+}

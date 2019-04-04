@@ -1,0 +1,42 @@
+HTTP/1.1 200 OK
+Content-Type: application/json; charset=utf-8
+Access-Control-Allow-Origin: *
+
+{
+   "success": true,
+   "professors": [
+        {
+            "name": "Abigail Alsop",
+            "id": 0,
+            "timeslots": [
+                {
+                    "name": "2019-04-05 12:00",
+                    "student": {
+                        "name": "Isaac Poole",
+                        "id": 0
+                    }
+                },
+                {
+                    "name": "2019-04-05 16:00",
+                    "student": {
+                        "name": "Michael Robertson",
+                        "id": 1
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Edward Powell",
+            "id": 1,
+            "timeslots": [
+                {
+                    "name": "2019-04-05 14:00",
+                    "student": {
+                        "name": "William Taylor",
+                        "id": 2
+                    }
+                }
+            ]
+        }
+   ]
+}
