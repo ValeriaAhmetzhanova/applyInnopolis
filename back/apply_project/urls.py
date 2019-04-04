@@ -24,12 +24,12 @@ urlpatterns = [
     path(r'api/', include([
         path('me', views.ExampleView.as_view()),
 
-        path('user/signup/create', views.SignupCreate.as_view()),
-        path('user/signup/verify/<str:hash>', views.SignupVerify.as_view()),
-        path('user/signup/finish', views.SignupFinish.as_view()),
+        path('user/signup/create', views.signup_create),
+        path('user/signup/verify/<str:hash>', views.signup_verify),
+        path('user/signup/finish', views.signup_finish),
 
         path('user/login', auth_views.obtain_auth_token),
-        path('user/logout', views.LogoutView.as_view()),
+        path('user/logout', views.logout_view),
 
         path('user/<int:user_id>', views.UserView.as_view()),
 
