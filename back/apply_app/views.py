@@ -1,19 +1,19 @@
+import uuid
+
 from django.shortcuts import render
-from rest_framework import viewsets
-from rest_framework.decorators import (
-    api_view,
-    authentication_classes,
-    permission_classes,
-)
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth import login, authenticate, get_user_model
+from django.core.validators import validate_email
+from django.core.exceptions import ValidationError
+from django.db import *
+from rest_framework import viewsets, status
 from rest_framework.authentication import TokenAuthentication
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth import login, authenticate
-from rest_framework import status
 
-from .models import CustomUser
+from .models import CustomUser, EmailVerification
 
 
 non_authenticated = permission_classes((~IsAuthenticated,))
@@ -32,7 +32,44 @@ class ExampleView(APIView):
 @api_view(['POST'])
 @non_authenticated
 def signup_create(request):
-    return Response(status=418)
+    try:
+        first_name = request.data["firstName"]
+        last_name = request.data["lastName"]
+        email = request.data["email"]
+    except KeyError as e:
+        return Response(status=400, data={
+            "description": "required field is missing",
+            "field": e.args[0],
+        })
+
+    if not first_name or not last_name:
+        return Response(status=400, data={
+            "description": "first and/or last name is empty",
+        })
+
+    try:
+        validate_email(email)
+    except ValidationError:
+        return Response(status=400, data={
+            "description": "email is invalid",
+        })
+
+    if 0 != get_user_model().objects.filter(email=email).count():
+        return Response(status=418, data={
+            "description": "email already registered",
+        })
+
+    # 0. delete if exists
+    EmailVerification.objects.filter(email=email).delete()
+    # 1. generate unique key
+    token = EmailVerification.objects.create(first_name=first_name, last_name=last_name, email=email)
+    # 2. write key with email and first/last name to temporal store
+    token.save()
+    # 3. send email with key
+    # TODO
+    print('sending mail to {} with key {}'.format(email, token.key))
+
+    return Response(status=200)
 
 
 @api_view(['POST'])
