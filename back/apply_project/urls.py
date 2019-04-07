@@ -1,4 +1,4 @@
-"""applyInnopolis URL Configuration
+"""apply_project URL Configuration
 
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/2.1/topics/http/urls/
@@ -16,14 +16,22 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from rest_framework import routers
-from .rest import views
 from rest_framework.authtoken import views as auth_views
+
+from apply_app import views
 
 urlpatterns = [
     path(r'api/', include([
         path('me', views.ExampleView.as_view()),
 
-        path('user/login/', auth_views.obtain_auth_token),
+        path('user/signup/create', views.signup_create),
+        path('user/signup/verify/<str:hash>', views.signup_verify),
+        path('user/signup/finish', views.signup_finish),
+
+        path('user/login', auth_views.obtain_auth_token),
+        path('user/logout', views.logout_view),
+
+        path('user/<int:user_id>', views.UserView.as_view()),
 
         # TODO: delete tutorial
         path('admin/', admin.site.urls),
